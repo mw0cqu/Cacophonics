@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/panel_bg"
+    android:orientation="vertical"
+    android:paddingStart="14dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="10dp">
+
+    <!-- Top row: stream number, name, and the speaker (mute) icon at the top right -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+
+        <!-- Volume slider for this stream, to the left of the speaker icon -->
+        <uk.mw0cqu.cacophonics.VolumeBar
+            android:id="@+id/vol"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            android:contentDescription="Volume" />
+
+        <!-- Tag lockout: tap to silence the tag showing now; long-press to clear the list -->
+        <ImageButton
+            android:id="@+id/lock"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Lock out this tag"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_tag" />
+
+        <ImageButton
+            android:id="@+id/mute"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Mute"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_speaker_on" />
+    </LinearLayout>
+
+    <!-- OpenWebRX+ only: squelch slider (hidden for Icecast streams and digital modes) -->
+    <LinearLayout
+        android:id="@+id/sqlRow"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical|end"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/sqlLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="34dp"
+            android:text="SQL"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <uk.mw0cqu.cacophonics.VolumeBar
+            android:id="@+id/sql"
+            android:layout_width="168dp"
+            android:layout_height="48dp"
+            android:contentDescription="Squelch" />
+    </LinearLayout>
+
+    <!-- The tag gets the full width of the panel and all the spare height -->
+    <uk.mw0cqu.cacophonics.TagView
+        android:id="@+id/tag"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1" />
+
+    <!-- Hidden: the speaker colour and the tag line already tell you the connection state. -->
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:visibility="gone"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+</LinearLayout>

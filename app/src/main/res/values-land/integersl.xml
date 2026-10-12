@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Landscape (van stereo): 2 x 2 grid of stream panels -->
+    <integer name="grid_columns">2</integer>
+</resources>

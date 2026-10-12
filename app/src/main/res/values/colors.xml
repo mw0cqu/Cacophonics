@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0F1115</color>
+    <color name="panel">#1B1F27</color>
+    <color name="accent">#4FC3F7</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9AA4B2</color>
+    <color name="live_green">#2E7D32</color>
+    <color name="muted_red">#B71C1C</color>
+    <color name="icon_on">#4CAF50</color>
+    <color name="icon_off">#F44336</color>
+
+    <!-- Live (receiving) panel: light grey background, dark text, darker icon colours -->
+    <color name="live_bg">#BEC4CC</color>
+    <color name="live_text">#10141A</color>
+    <color name="live_text_secondary">#2E3540</color>
+    <color name="live_accent">#0D47A1</color>
+    <color name="icon_on_live">#1B5E20</color>
+    <color name="icon_off_live">#B71C1C</color>
+    <color name="button_on_accent">#082030</color>
+</resources>

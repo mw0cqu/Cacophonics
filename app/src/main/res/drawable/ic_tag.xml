@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Luggage / baggage tag with a hole at the top and two text lines. Colour is set in code. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M9,2h6l2,3v15a2,2 0 0 1 -2,2H9a2,2 0 0 1 -2,-2V5zM12,3.7a1.4,1.4 0 1 0 0.01,0zM9.5,10h5v1.5h-5zM9.5,13.2h5v1.5h-5zM9.5,16.4h3.5v1.5h-3.5z" />
+</vector>

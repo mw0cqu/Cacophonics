@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tag text size in landscape: smaller so more of the tag fits on the shorter panels -->
+    <dimen name="tag_text_size">18sp</dimen>
+
+    <!-- Effectively no cap in landscape: the 2 x 2 grid fills the screen as before -->
+    <dimen name="panel_max_height">1000dp</dimen>
+
+    <!-- Shortest a panel may get; with 6 streams the screen scrolls instead of squashing them -->
+    <dimen name="panel_min_height">110dp</dimen>
+
+    <!-- Extra height for the squelch slider row on OpenWebRX+ panels -->
+    <dimen name="sql_row_height">48dp</dimen>
+</resources>

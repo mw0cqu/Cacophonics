@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tag text size in portrait -->
+    <dimen name="tag_text_size">22sp</dimen>
+
+    <!-- Tallest a stream panel may be in portrait. Lower = shorter panels. -->
+    <dimen name="panel_max_height">150dp</dimen>
+
+    <!-- Shortest a panel may get; with 6 streams the screen scrolls instead of squashing them -->
+    <dimen name="panel_min_height">135dp</dimen>
+
+    <!-- Extra height for the squelch slider row on OpenWebRX+ panels -->
+    <dimen name="sql_row_height">48dp</dimen>
+</resources>
