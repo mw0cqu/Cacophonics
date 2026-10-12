@@ -49,6 +49,7 @@ class InfoActivity : AppCompatActivity() {
                 "• Bob Aune and ProScan – https://www.proscan.org\n\n" +
                 "• The Icecast2 project – https://icecast.org\n\n" +
                 "• The OpenWebRX+ project – https://github.com/luarvique/openwebrx\n\n" +
+                "Source code: https://github.com/mw0cqu/Cacophonics\n\n" +
                 "Copyright © 2026 Rob (MW0CQU)\n\n" +
                 "This is free software, licensed under the GNU General Public License, version 3 or " +
                 "(at your option) any later version. It comes with ABSOLUTELY NO WARRANTY. You may " +

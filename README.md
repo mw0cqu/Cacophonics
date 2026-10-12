@@ -70,6 +70,14 @@ listening to that SDR.
 
 Settings also has a tick-box to start the streams automatically when the app opens.
 
+## Install a release
+
+Source code and releases: https://github.com/mw0cqu/Cacophonics
+
+Download `app-release.apk` from the latest release on your phone and open it. Allow your browser to
+install unknown apps when asked. Android or Play Protect may warn that the app is from an unknown
+developer, because it is not from the Play Store; choose **Install anyway**.
+
 ## Build it (no Kotlin knowledge needed)
 
 1. Install **Android Studio** (free): https://developer.android.com/studio
