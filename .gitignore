@@ -6,3 +6,10 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Release signing - never upload these
+*.jks
+*.keystore
+keystore.properties
+*.apk
+*.aab

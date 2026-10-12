@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Rob (MW0CQU)
+
 package uk.mw0cqu.cacophonics
 
 import android.os.Bundle
@@ -24,19 +27,39 @@ class InfoActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.btnBack).setOnClickListener { finish() }
     }
 
-    private fun aboutText(): String {
+    private fun aboutText(): CharSequence {
         val version = try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
         } catch (_: Exception) {
             "?"
         }
-        return "${getString(R.string.app_name)}\nMany radios, one phone.\nVersion $version\n\n" +
+        val out = android.text.SpannableStringBuilder()
+        out.append(getString(R.string.app_name)).append("\n\n")
+        val start = out.length
+        out.append("Many radios one phone")
+        out.setSpan(
+            android.text.style.StyleSpan(android.graphics.Typeface.ITALIC),
+            start, out.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        out.append("\n\nDeveloped by Rob (MW0CQU)\n\nVersion $version\n\n")
+        out.append(
             "Listen to several Icecast2 streams and OpenWebRX+ receivers at the same time, " +
-            "with each stream's tag shown on screen, on Bluetooth and on the car stereo.\n\n" +
-            "This project was inspired by the work of others, and gratefully acknowledges:\n\n" +
-            "• Bob Aune and ProScan – https://www.proscan.org\n\n" +
-            "• The Icecast2 project – https://icecast.org\n\n" +
-            "• The OpenWebRX+ project – https://github.com/luarvique/openwebrx"
+                "with each stream's tag shown on screen, on Bluetooth and on the car stereo.\n\n" +
+                "This project was inspired by the work of others, and gratefully acknowledges:\n\n" +
+                "• Bob Aune and ProScan – https://www.proscan.org\n\n" +
+                "• The Icecast2 project – https://icecast.org\n\n" +
+                "• The OpenWebRX+ project – https://github.com/luarvique/openwebrx\n\n" +
+                "Copyright © 2026 Rob (MW0CQU)\n\n" +
+                "This is free software, licensed under the GNU General Public License, version 3 or " +
+                "(at your option) any later version. It comes with ABSOLUTELY NO WARRANTY. You may " +
+                "share and change it under the terms of that licence: https://www.gnu.org/licenses/gpl-3.0.html\n\n" +
+                "Open-source components used (all Apache License 2.0):\n" +
+                "• AndroidX Media3 / ExoPlayer, AndroidX libraries and Material Components – Google\n" +
+                "• OkHttp – Square, Inc.\n" +
+                "• Kotlin – JetBrains\n" +
+                "Licence: https://www.apache.org/licenses/LICENSE-2.0"
+        )
+        return out
     }
 }
 
@@ -53,9 +76,9 @@ private const val HELP_TEXT =
         "Tap the tag icon to silence the tag showing now. It flashes green while some tags are locked, and red while a locked tag is on air. Tap it again to unlock. Press and hold it to clear the list. Locked tags are forgotten when the streams stop.\n\n" +
         "OpenWebRX+ panels\n" +
         "These show the frequency, mode and bookmark name. Analog modes have a squelch slider: left is open, further right needs a stronger signal. Digital voice modes do not use squelch.\n\n" +
-        "Source Settings\n" +
-        "Open the menu (three bars, top right) and choose Source Settings. Icecast: enter the server and port, press Connect, choose a mountpoint from the list, then Apply. OpenWebRX+: enter the receiver address, press Connect, choose a profile, mode and frequency, then Apply.\n\n" +
+        "Configure\n" +
+        "Open the menu (three bars, top right) and choose Configure. Icecast: enter the server and port, press Connect, choose a mountpoint from the list, then Apply. OpenWebRX+: enter the receiver address, press Connect, choose a profile, mode and frequency, then Apply.\n\n" +
         "When Bluetooth disconnects\n" +
         "All streams stop so nothing plays from the phone speaker. Press GO when the Bluetooth connection is back.\n\n" +
         "Menu\n" +
-        "Source Settings, Help, About, Back (return to the streams) and Quit (stops everything and closes the app)."
+        "Configure, Help, About, Back (return to the streams) and Quit (stops everything and closes the app)."

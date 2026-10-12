@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Rob (MW0CQU)
+
 package uk.mw0cqu.cacophonics
 
 import android.util.Log

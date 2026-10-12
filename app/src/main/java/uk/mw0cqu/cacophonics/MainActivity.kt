@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Rob (MW0CQU)
+
 package uk.mw0cqu.cacophonics
 
 import android.Manifest
@@ -329,7 +332,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showMenu(anchor: View) {
         val menu = PopupMenu(this, anchor)
-        menu.menu.add(0, 1, 0, "Source Settings")
+        menu.menu.add(0, 1, 0, "Configure")
         menu.menu.add(0, 2, 1, "Help")
         menu.menu.add(0, 3, 2, "About")
         menu.menu.add(0, 4, 3, "Back")

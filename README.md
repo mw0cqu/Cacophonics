@@ -48,13 +48,13 @@ columns. There are **six** source slots; the screen scrolls if they do not all f
 
 - **Sign button, top right:** a green **GO** roundel starts the streams; while they run it is a red
   **STOP** octagon that stops everything.
-- **Menu (three bars):** Source Settings, Help, About, Back (closes the menu) and Quit
+- **Menu (three bars):** Configure, Help, About, Back (closes the menu) and Quit
   (stops everything and closes the app).
 - **Speaker:** mutes or unmutes that source (green = playing, red = muted, grey = not
   connected). A muted source stays connected, so its tag keeps updating. If a locked tag is on air,
   tapping the speaker lifts the lock.
 
-## Setting up sources (Menu > Source Settings)
+## Setting up sources (Menu > Configure)
 
 **Icecast2:** enter the server name or IP and the port (default 8000), plus a user name and
 password only if the mount needs one, then press **Connect**. The app lists the server's mounts;
@@ -120,3 +120,21 @@ and any `.iml` files in the project folder, and open it again.
   OpenWebRX+, an iPhone version (would be a rewrite and needs a Mac).
 - A first-draft Help screen and an About screen (with the acknowledgements above) are in the
   menu.
+
+## Licence
+
+Copyright (C) 2026 Rob (MW0CQU).
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+**GNU General Public License** as published by the Free Software Foundation, either **version 3** of
+the License, or (at your option) any later version. It is distributed in the hope that it will be
+useful, but **without any warranty**; without even the implied warranty of merchantability or fitness
+for a particular purpose. See the [`LICENSE`](LICENSE) file, or https://www.gnu.org/licenses/gpl-3.0.html.
+
+It uses these open-source libraries, all under the Apache License 2.0
+(https://www.apache.org/licenses/LICENSE-2.0): AndroidX Media3 / ExoPlayer, AndroidX libraries and
+Material Components (Google), OkHttp (Square, Inc.) and Kotlin (JetBrains).
+
+Credits: inspired by Bob Aune's ProScan (https://www.proscan.org) and the Icecast2 project
+(https://icecast.org); works with OpenWebRX+ (https://github.com/luarvique/openwebrx). None of their
+code is included.
