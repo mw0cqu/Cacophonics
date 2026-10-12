@@ -53,6 +53,9 @@ class OwrxClient(
     companion object {
         private const val TAG = "OWRX"
         private const val RATE = 12000
+
+        /** Rate of the receiver's "HD" audio stream, which it uses for wideband FM. */
+        private const val HD_RATE = 44100
         private const val MAX_QUEUED_FRAMES = 30
         private const val WATCHDOG_MS = 15_000L
 
@@ -215,6 +218,7 @@ class OwrxClient(
     private var tagText = baseTag
     private var lastParams: JSONObject? = null
     private var firstAudioLogged = false
+    private var audioType = 0
     private val seenTypes = HashSet<Int>()
 
     // ADPCM decoder state
@@ -340,7 +344,7 @@ class OwrxClient(
             Log.i(TAG, "server hello: ${text.take(200)}")
             webSocket.send(
                 JSONObject().put("type", "connectionproperties")
-                    .put("params", JSONObject().put("output_rate", RATE))
+                    .put("params", JSONObject().put("output_rate", RATE).put("hd_output_rate", HD_RATE))
                     .toString()
             )
             return
@@ -519,7 +523,6 @@ class OwrxClient(
         webSocket.send(
             JSONObject().put("type", "dspcontrol").put("action", "start").put("params", params).toString()
         )
-        startPlayback()
         started = true
         watchdog?.interrupt()
         cb.onStarted(tagText)
@@ -531,7 +534,18 @@ class OwrxClient(
         if (data.isEmpty()) return
         val type = data[0].toInt() and 0xFF
         if (seenTypes.add(type)) Log.i(TAG, "first binary frame of type $type, ${data.size} bytes")
-        if (type != 2 || !started) return // 2 = audio at the requested rate; everything else is ignored
+        if (!started) return
+        // 2 = audio at the normal rate, 4 = "HD" audio (wideband FM). Whichever arrives first is
+        // played; everything else (spectrum data and so on) is ignored.
+        if (type != 2 && type != 4) return
+        if (audioType == 0) {
+            audioType = type
+            val rate = if (type == 4) HD_RATE else RATE
+            Log.i(TAG, "audio arrives as frame type $type, playing at $rate Hz")
+            startPlayback(rate)
+        } else if (type != audioType) {
+            return
+        }
 
         if (!firstAudioLogged) {
             firstAudioLogged = true
@@ -645,9 +659,9 @@ class OwrxClient(
         }
     }
 
-    private fun startPlayback() {
+    private fun startPlayback(rate: Int) {
         val min = AudioTrack.getMinBufferSize(
-            RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT
+            rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT
         )
         val t = AudioTrack(
             AudioAttributes.Builder()
@@ -655,11 +669,11 @@ class OwrxClient(
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build(),
             AudioFormat.Builder()
-                .setSampleRate(RATE)
+                .setSampleRate(rate)
                 .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
                 .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                 .build(),
-            max(min, RATE), // about half a second
+            max(min, rate), // about half a second
             AudioTrack.MODE_STREAM,
             AudioManager.AUDIO_SESSION_ID_GENERATE
         )

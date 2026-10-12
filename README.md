@@ -63,7 +63,7 @@ used. Errors (name not found, connection refused, timeout, HTTP codes and so on)
 If the public status page lists nothing and you gave an admin password, the admin mount list is
 tried as well.
 
-**OpenWebRX+:** enter the receiver's address (with port), press **Connect**, choose a
+**OpenWebRX+:** enter the receiver's address and its port (usually 8073), press **Connect**, choose a
 profile from the list, then the mode and the frequency in MHz, then **Apply**. For DMR you can pick
 a timeslot (both, 1 or 2). Choosing a different profile changes it on the receiver for everyone
 listening to that SDR.

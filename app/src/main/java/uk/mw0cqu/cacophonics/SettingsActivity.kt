@@ -65,7 +65,7 @@ class SettingsActivity : AppCompatActivity() {
 
         fun toConfig() = StreamConfig(
             name = name.text.toString().trim(),
-            url = if (type.selectedItemPosition == 1) url.text.toString().trim()
+            url = if (type.selectedItemPosition == 1) owrxAddress(url.text.toString(), port.text.toString())
             else IcecastProbe.build(url.text.toString(), port.text.toString(), mountPath),
             user = user.text.toString().trim(),
             pass = pass.text.toString(),
@@ -87,9 +87,8 @@ class SettingsActivity : AppCompatActivity() {
             val owrx = type.selectedItemPosition == 1
             icecastGroup.visibility = if (owrx) View.GONE else View.VISIBLE
             owrxGroup.visibility = if (owrx) View.VISIBLE else View.GONE
-            port.visibility = if (owrx) View.GONE else View.VISIBLE
-            url.hint = if (owrx) "Receiver address, e.g. http://192.168.1.50:8073"
-            else "Server name or IP, e.g. 192.168.1.50"
+            url.hint = "e.g. 192.168.1.50"
+            port.hint = if (owrx) "e.g. 8073" else "e.g. 8000"
         }
     }
 
@@ -99,6 +98,39 @@ class SettingsActivity : AppCompatActivity() {
         val SLOT_LABELS = listOf("Both timeslots", "Timeslot 1", "Timeslot 2")
         val SLOT_VALUES = listOf("3", "1", "2")
         val TYPES = listOf("Icecast stream", "OpenWebRX+ receiver")
+
+        /** A saved receiver address -> (address box text, port box text). A path such as /sdr stays in the address box. */
+        fun owrxSplit(saved: String): Pair<String, String> {
+            var u = saved.trim()
+            if (u.isEmpty()) return "" to "8073"
+            if (!u.contains("://")) u = "http://$u"
+            return try {
+                val uri = java.net.URI(u)
+                val https = uri.scheme.equals("https", true) || uri.scheme.equals("wss", true)
+                val path = (uri.path ?: "").trimEnd('/')
+                val shown = (if (https) "https://" else "") + uri.host + path
+                shown to (if (uri.port > 0) uri.port.toString() else if (https) "443" else "8073")
+            } catch (_: Exception) {
+                saved.trim() to "8073"
+            }
+        }
+
+        /** Address box + port box -> the address to save. A port typed inside the address box wins. */
+        fun owrxAddress(server: String, port: String): String {
+            var u = server.trim()
+            if (u.isEmpty()) return ""
+            if (!u.contains("://")) u = "http://$u"
+            return try {
+                val uri = java.net.URI(u)
+                val host = uri.host ?: return server.trim()
+                val https = uri.scheme.equals("https", true) || uri.scheme.equals("wss", true)
+                val p = if (uri.port > 0) uri.port else port.trim().toIntOrNull() ?: if (https) 443 else 8073
+                val path = (uri.path ?: "").trimEnd('/')
+                "${if (https) "https" else "http"}://$host:$p$path"
+            } catch (_: Exception) {
+                server.trim()
+            }
+        }
     }
 
     private val sections = ArrayList<Section>()
@@ -143,8 +175,9 @@ class SettingsActivity : AppCompatActivity() {
             s.header.text = "Stream ${i + 1}"
             s.name.setText(cfgs[i].name)
             if (cfgs[i].isOwrx) {
-                s.url.setText(cfgs[i].url)
-                s.port.setText("8000")
+                val (server, port) = owrxSplit(cfgs[i].url)
+                s.url.setText(server)
+                s.port.setText(port)
             } else {
                 val (server, port, mount) = IcecastProbe.split(cfgs[i].url)
                 s.url.setText(server)
@@ -156,7 +189,10 @@ class SettingsActivity : AppCompatActivity() {
                 s.profilesLoaded = false
                 s.mountsLoaded = false
             }
-            s.port.doAfterTextChanged { s.mountsLoaded = false }
+            s.port.doAfterTextChanged {
+                s.mountsLoaded = false
+                s.profilesLoaded = false
+            }
             s.user.setText(cfgs[i].user)
             s.pass.setText(cfgs[i].pass)
             s.type.adapter = ArrayAdapter(this, R.layout.spinner_item, TYPES).also {
@@ -303,7 +339,7 @@ class SettingsActivity : AppCompatActivity() {
 
     /** Connects to the receiver, fetches its profiles and fills in the list. */
     private fun testConnection(s: Section, openAfter: Boolean = false) {
-        val address = s.url.text.toString().trim()
+        val address = owrxAddress(s.url.text.toString(), s.port.text.toString())
         s.testStatus.text = "Connecting…"
         s.testConn.isEnabled = false
         OwrxProbe(address, null, object : OwrxProbe.Callback {

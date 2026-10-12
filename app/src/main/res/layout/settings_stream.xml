@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- Icecast: server name or IP + port.  OpenWebRX+: the receiver's address (port included). -->
+    <!-- Server name or IP + port, for both Icecast and OpenWebRX+. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,17 +39,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Server name or IP"
+            android:hint="e.g. 192.168.1.50"
             android:importantForAutofill="no"
             android:inputType="textUri"
             android:textColor="@color/text_primary" />
 
         <EditText
             android:id="@+id/port"
-            android:layout_width="84dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:hint="Port"
+            android:hint="e.g. 8000"
             android:importantForAutofill="no"
             android:inputType="number"
             android:maxLength="5"
