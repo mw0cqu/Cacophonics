@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/caution_bg"
+    android:clipToOutline="true"
+    android:orientation="vertical">
+
+    <uk.mw0cqu.cacophonics.HazardHeader
+        android:layout_width="match_parent"
+        android:layout_height="96dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="Delete all stream data"
+        android:textColor="#141414"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="This cannot be undone"
+        android:textColor="#555555"
+        android:textSize="15sp" />
+
+    <uk.mw0cqu.cacophonics.HoldButton
+        android:id="@+id/hold"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="24dp" />
+
+    <TextView
+        android:id="@+id/goBack"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/caution_goback_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="Go back"
+        android:textColor="#141414"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+</LinearLayout>
