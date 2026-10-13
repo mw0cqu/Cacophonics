@@ -97,6 +97,12 @@ object Prefs {
         e.apply()
     }
 
+    /** Forgets every stream, volume and squelch setting. The "start automatically" choice is kept. */
+    fun clearAll(c: Context) {
+        val auto = autostart(c)
+        sp(c).edit().clear().putBoolean("autostart", auto).apply()
+    }
+
     fun autostart(c: Context): Boolean = sp(c).getBoolean("autostart", true)
 
     fun setAutostart(c: Context, value: Boolean) {

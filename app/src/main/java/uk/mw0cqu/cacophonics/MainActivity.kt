@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity() {
         btnStart.setOnClickListener {
             if (service?.running == true) stopStreams() else startStreams()
         }
+        // Press and hold the sign (running or stopped) to delete all stream data, after a warning.
+        btnStart.setOnLongClickListener {
+            confirmWipe()
+            true
+        }
         findViewById<View>(R.id.btnMenu).setOnClickListener { showMenu(it) }
 
         buildPanels()
@@ -335,8 +340,7 @@ class MainActivity : AppCompatActivity() {
         menu.menu.add(0, 1, 0, "Configure")
         menu.menu.add(0, 2, 1, "Help")
         menu.menu.add(0, 3, 2, "About")
-        menu.menu.add(0, 4, 3, "Back")
-        menu.menu.add(0, 5, 4, "Quit")
+        menu.menu.add(0, 5, 3, "Quit")
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> startActivity(Intent(this, SettingsActivity::class.java))
@@ -347,11 +351,47 @@ class MainActivity : AppCompatActivity() {
                     Intent(this, InfoActivity::class.java).putExtra(InfoActivity.EXTRA_PAGE, InfoActivity.PAGE_ABOUT)
                 )
                 5 -> quit()
-                // 4 = Back: the menu simply closes and the running app stays as it is.
             }
             true
         }
         menu.show()
+    }
+
+    /** Warning box: the data is only deleted by pressing and HOLDING the confirm button. */
+    private fun confirmWipe() {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("CAUTION")
+            .setMessage("Delete all stream data")
+            .setPositiveButton("TAP AND HOLD to confirm", null)
+            .setNegativeButton("Go back", null)
+            .create()
+        dialog.setOnShowListener {
+            val confirm = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            confirm.setTextColor(android.graphics.Color.rgb(200, 16, 46))
+            // A plain tap only reminds; it does not close the box or delete anything.
+            confirm.setOnClickListener {
+                Toast.makeText(this, "Keep holding the button to confirm", Toast.LENGTH_SHORT).show()
+            }
+            confirm.setOnLongClickListener {
+                dialog.dismiss()
+                wipeAllData()
+                true
+            }
+        }
+        dialog.show()
+    }
+
+    /** Stops everything and forgets all six streams, with their volume and squelch settings. */
+    private fun wipeAllData() {
+        service?.resetAll()
+        stopService(Intent(this, StreamService::class.java))
+        Prefs.clearAll(this)
+        for (p in panels) {
+            p.vol.progress = 100
+            p.sql.progress = Prefs.DEFAULT_SQUELCH
+        }
+        render()
+        Toast.makeText(this, "All stream data deleted", Toast.LENGTH_LONG).show()
     }
 
     private fun color(id: Int) = ContextCompat.getColor(this, id)

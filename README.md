@@ -48,8 +48,11 @@ columns. There are **six** source slots; the screen scrolls if they do not all f
 
 - **Sign button, top right:** a green **GO** roundel starts the streams; while they run it is a red
   **STOP** octagon that stops everything.
-- **Menu (three bars):** Configure, Help, About, Back (closes the menu) and Quit
+- **Menu (three bars):** Configure, Help, About and Quit
   (stops everything and closes the app).
+- **Delete all stream data:** press and hold the sign (running or stopped). A CAUTION box asks you to
+  press and hold its red button to confirm, or tap **Go back**. It deletes all six streams and their
+  volume and squelch settings; the start-automatically choice is kept.
 - **Speaker:** mutes or unmutes that source (green = playing, red = muted, grey = not
   connected). A muted source stays connected, so its tag keeps updating. If a locked tag is on air,
   tapping the speaker lifts the lock.

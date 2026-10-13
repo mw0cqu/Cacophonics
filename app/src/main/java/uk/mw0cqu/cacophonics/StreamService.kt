@@ -259,6 +259,24 @@ class StreamService : MediaBrowserServiceCompat() {
         refresh()
     }
 
+    /** Stops everything and puts the live state of every stream back to its starting values. */
+    fun resetAll() {
+        stopAll()
+        for (i in 0 until Prefs.SLOTS) {
+            locks[i].clear()
+            val s = states[i]
+            s.muted = false
+            s.locked = false
+            s.lockCount = 0
+            s.volume = 100
+            s.squelch = Prefs.DEFAULT_SQUELCH
+            s.tag = ""
+            s.audio = false
+            s.status = "Stopped"
+        }
+        onChange?.invoke()
+    }
+
     fun stopAll() {
         owrxChecks.clear()
         running = false
