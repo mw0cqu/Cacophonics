@@ -105,8 +105,8 @@ object Prefs {
 
     fun volume(c: Context, i: Int): Int = sp(c).getInt("vol$i", 100).coerceIn(0, 100)
 
-    /** Until the slider has been moved the squelch starts closed at 40 (about -90 dB), not off. */
-    const val DEFAULT_SQUELCH = 40
+    /** Until the slider has been moved the squelch starts fully closed (100, 0 dB), so nothing is heard until it is opened. */
+    const val DEFAULT_SQUELCH = 100
 
     fun squelch(c: Context, i: Int): Int = sp(c).getInt("sqv$i", DEFAULT_SQUELCH).coerceIn(0, 100)
 

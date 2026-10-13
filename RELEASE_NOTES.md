@@ -1,4 +1,4 @@
-# Cacophonics 1.0.2
+# Cacophonics 1.0.4
 
 Many radios, one phone. Listen to up to six Icecast2 streams and OpenWebRX+ receivers at once, with
 each source's tag on screen, on Bluetooth and on the car stereo.
@@ -18,7 +18,13 @@ Known gaps
 Install: download `app-release.apk`, allow "Install unknown apps" when asked, and open it. Android
 or Play Protect may warn that the app is from an unknown developer; choose "Install anyway".
 
-What is new in 1.0.2: OpenWebRX+ sources now have a separate port box like Icecast ones, the example
+What is new in 1.0.4: typing port 443 now makes the app use https automatically, so the https://
+prefix is no longer needed on port 443.
+
+What was new in 1.0.3: OpenWebRX+ analog sources now start with the squelch fully closed, so nothing
+is heard until you slide it open. OpenWebRX+ sources are mono; Icecast streams keep what the server sends.
+
+What was new in 1.0.2: OpenWebRX+ sources now have a separate port box like Icecast ones, the example
 text in the address boxes is shortened, and wideband FM (WFM) on OpenWebRX+ now plays (it uses the
 receiver's HD audio stream, which the app was ignoring).
 

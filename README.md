@@ -30,7 +30,7 @@ columns. There are **six** source slots; the screen scrolls if they do not all f
 - **OpenWebRX+:** native client (no browser). Choose the receiver's profile from a list, then a
   mode (analog and digital) and a frequency. The panel shows the frequency, mode, the name of a
   matching bookmark, and call metadata for digital voice. Analog modes have a **squelch slider**
-  (left = open; it starts at 40, about -90 dB, until you move it). Digital modes do not use squelch.
+  (left = open, right = closed; it starts fully closed so nothing blasts out, and you slide it left to the level you want). Digital modes do not use squelch.
 - **Receiver check at start:** before an OpenWebRX+ stream starts, the app asks the receiver
   whether the saved profile still exists and is still named the same (the name carries the
   range). A stream that fails the check does not start and says why. Two streams on the same SDR
@@ -67,6 +67,9 @@ tried as well.
 profile from the list, then the mode and the frequency in MHz, then **Apply**. For DMR you can pick
 a timeslot (both, 1 or 2). Choosing a different profile changes it on the receiver for everyone
 listening to that SDR.
+
+Addresses can be an IP address or a domain name. Plain `http` is assumed; for an encrypted (https)
+server use port 443, or type `https://` in front of the address.
 
 Settings also has a tick-box to start the streams automatically when the app opens.
 

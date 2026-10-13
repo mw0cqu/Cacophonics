@@ -119,7 +119,7 @@ class SettingsActivity : AppCompatActivity() {
         fun owrxAddress(server: String, port: String): String {
             var u = server.trim()
             if (u.isEmpty()) return ""
-            if (!u.contains("://")) u = "http://$u"
+            if (!u.contains("://")) u = (if (port.trim() == "443") "https://" else "http://") + u
             return try {
                 val uri = java.net.URI(u)
                 val host = uri.host ?: return server.trim()

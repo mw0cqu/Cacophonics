@@ -46,12 +46,13 @@ class IcecastProbe(
     companion object {
         /**
          * Builds "http://host:port" from what is typed in the server and port boxes. A port typed
-         * in the server box wins; if there is none anywhere it is 8000 (443 for https).
+         * in the server box wins; if there is none anywhere it is 8000 (443 for https). With no
+         * http:// or https:// typed, port 443 means https.
          */
         fun baseFrom(server: String, port: String): String? {
             var u = server.trim()
             if (u.isEmpty()) return null
-            if (!u.contains("://")) u = "http://$u"
+            if (!u.contains("://")) u = (if (port.trim() == "443") "https://" else "http://") + u
             val uri = try {
                 URI(u)
             } catch (_: Exception) {

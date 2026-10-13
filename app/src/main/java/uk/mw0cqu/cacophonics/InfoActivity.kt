@@ -76,7 +76,7 @@ private const val HELP_TEXT =
         "Tag lockout (Icecast streams)\n" +
         "Tap the tag icon to silence the tag showing now. It flashes green while some tags are locked, and red while a locked tag is on air. Tap it again to unlock. Press and hold it to clear the list. Locked tags are forgotten when the streams stop.\n\n" +
         "OpenWebRX+ panels\n" +
-        "These show the frequency, mode and bookmark name. Analog modes have a squelch slider: left is open, further right needs a stronger signal. Digital voice modes do not use squelch.\n\n" +
+        "These show the frequency, mode and bookmark name. Analog modes have a squelch slider: left is open, further right needs a stronger signal. It starts fully to the right (closed), so you hear nothing until you slide it left to the level you want. Digital voice modes do not use squelch.\n\n" +
         "Configure\n" +
         "Open the menu (three bars, top right) and choose Configure. Icecast: enter the server and port, press Connect, choose a mountpoint from the list, then Apply. OpenWebRX+: enter the receiver address, press Connect, choose a profile, mode and frequency, then Apply.\n\n" +
         "When Bluetooth disconnects\n" +
