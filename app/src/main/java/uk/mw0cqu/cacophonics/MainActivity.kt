@@ -340,7 +340,8 @@ class MainActivity : AppCompatActivity() {
         menu.menu.add(0, 1, 0, "Configure")
         menu.menu.add(0, 2, 1, "Help")
         menu.menu.add(0, 3, 2, "About")
-        menu.menu.add(0, 5, 3, "Quit")
+        menu.menu.add(0, 4, 3, "Check for updates")
+        menu.menu.add(0, 5, 4, "Quit")
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> startActivity(Intent(this, SettingsActivity::class.java))
@@ -350,6 +351,7 @@ class MainActivity : AppCompatActivity() {
                 3 -> startActivity(
                     Intent(this, InfoActivity::class.java).putExtra(InfoActivity.EXTRA_PAGE, InfoActivity.PAGE_ABOUT)
                 )
+                4 -> checkForUpdates()
                 5 -> quit()
             }
             true
@@ -357,26 +359,60 @@ class MainActivity : AppCompatActivity() {
         menu.show()
     }
 
-    /** Warning box: the data is only deleted by pressing and HOLDING the confirm button. */
+    /** Asks GitHub for the newest release and says whether this version is up to date. */
+    private fun checkForUpdates() {
+        val current = try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
+        } catch (_: Exception) {
+            "?"
+        }
+        Toast.makeText(this, "Checking for updates…", Toast.LENGTH_SHORT).show()
+        UpdateCheck(current, object : UpdateCheck.Callback {
+            override fun onResult(r: UpdateCheck.Result) = runOnUiThread {
+                if (!isFinishing) showUpdateResult(current, r)
+            }
+
+            override fun onError(message: String) = runOnUiThread {
+                if (isFinishing) return@runOnUiThread
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Update check failed")
+                    .setMessage(message)
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+        }).start()
+    }
+
+    private fun showUpdateResult(current: String, r: UpdateCheck.Result) {
+        val box = AlertDialog.Builder(this)
+        if (r.newer) {
+            box.setTitle("Update available")
+                .setMessage("Version ${r.latest} is available. You have version $current.\n\nDownload opens the file in your browser; open it there to install it over this version. Your streams and settings are kept.")
+                .setPositiveButton("Download") { _, _ ->
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(r.url)))
+                    } catch (_: Exception) {
+                        Toast.makeText(this, "Could not open the download link", Toast.LENGTH_LONG).show()
+                    }
+                }
+                .setNegativeButton("Not now", null)
+        } else {
+            box.setTitle("You have the latest version")
+                .setMessage("Version $current is up to date.")
+                .setPositiveButton("OK", null)
+        }
+        box.show()
+    }
+
+    /** Warning box: the data is only deleted by pressing and HOLDING the red button until it fills. */
     private fun confirmWipe() {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("CAUTION")
-            .setMessage("Delete all stream data")
-            .setPositiveButton("TAP AND HOLD to confirm", null)
-            .setNegativeButton("Go back", null)
-            .create()
-        dialog.setOnShowListener {
-            val confirm = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            confirm.setTextColor(android.graphics.Color.rgb(200, 16, 46))
-            // A plain tap only reminds; it does not close the box or delete anything.
-            confirm.setOnClickListener {
-                Toast.makeText(this, "Keep holding the button to confirm", Toast.LENGTH_SHORT).show()
-            }
-            confirm.setOnLongClickListener {
-                dialog.dismiss()
-                wipeAllData()
-                true
-            }
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_caution, null)
+        val dialog = AlertDialog.Builder(this).setView(view).create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        view.findViewById<View>(R.id.goBack).setOnClickListener { dialog.dismiss() }
+        view.findViewById<HoldButton>(R.id.hold).onConfirmed = {
+            dialog.dismiss()
+            wipeAllData()
         }
         dialog.show()
     }

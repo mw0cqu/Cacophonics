@@ -82,6 +82,8 @@ private const val HELP_TEXT =
         "When Bluetooth disconnects\n" +
         "All streams stop so nothing plays from the phone speaker. Press GO when the Bluetooth connection is back.\n\n" +
         "Menu\n" +
-        "Configure, Help, About and Quit (stops everything and closes the app).\n\n" +
+        "Configure, Help, About, Check for updates and Quit (stops everything and closes the app).\n\n" +
+        "Check for updates\n" +
+        "Asks GitHub whether a newer version has been published. If there is one, Download opens it in your browser so you can install it over this version; your streams and settings are kept. It contacts GitHub only when you choose it.\n\n" +
         "Deleting everything\n" +
-        "Press and hold the GO / STOP sign. A CAUTION box appears; press and hold its red button to delete all six streams and their volume and squelch settings, or tap Go back."
+        "Press and hold the GO / STOP sign. A CAUTION box appears. Press and hold its red button until it has filled to delete all six streams and their volume and squelch settings. Let go early, or tap Go back, and nothing is deleted."

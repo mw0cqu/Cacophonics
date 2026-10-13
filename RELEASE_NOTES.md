@@ -1,4 +1,4 @@
-# Cacophonics 1.0.5
+# Cacophonics 1.0.6
 
 Many radios, one phone. Listen to up to six Icecast2 streams and OpenWebRX+ receivers at once, with
 each source's tag on screen, on Bluetooth and on the car stereo.
@@ -18,7 +18,11 @@ Known gaps
 Install: download `app-release.apk`, allow "Install unknown apps" when asked, and open it. Android
 or Play Protect may warn that the app is from an unknown developer; choose "Install anyway".
 
-What is new in 1.0.5: press and hold the GO / STOP sign to delete all stream data (after a CAUTION
+What is new in 1.0.6: a "Check for updates" entry in the menu. It asks GitHub for the newest release and
+says whether a newer version exists, with a Download button. The delete-all warning is now a
+hazard-striped CAUTION box whose red button fills while you hold it.
+
+What was new in 1.0.5: press and hold the GO / STOP sign to delete all stream data (after a CAUTION
 warning you must press and hold to confirm). The menu no longer has a "Back" entry.
 
 What was new in 1.0.4: typing port 443 now makes the app use https automatically, so the https://
