@@ -13,3 +13,6 @@ captures/
 keystore.properties
 *.apk
 *.aab
+
+# Signed-build output (the APK to attach to a release, plus extra files Android Studio writes)
+app/release/

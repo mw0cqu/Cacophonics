@@ -1,4 +1,4 @@
-# Cacophonics 1.0.6
+# Cacophonics 1.0.7
 
 Many radios, one phone. Listen to up to six Icecast2 streams and OpenWebRX+ receivers at once, with
 each source's tag on screen, on Bluetooth and on the car stereo.
@@ -18,7 +18,9 @@ Known gaps
 Install: download `app-release.apk`, allow "Install unknown apps" when asked, and open it. Android
 or Play Protect may warn that the app is from an unknown developer; choose "Install anyway".
 
-What is new in 1.0.6: a "Check for updates" entry in the menu. It asks GitHub for the newest release and
+What is new in 1.0.7: the menu entry "Check for updates" is now simply "Updates".
+
+What was new in 1.0.6: a "Check for updates" entry in the menu. It asks GitHub for the newest release and
 says whether a newer version exists, with a Download button. The delete-all warning is now a
 hazard-striped CAUTION box whose red button fills while you hold it.
 

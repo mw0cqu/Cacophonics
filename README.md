@@ -48,9 +48,9 @@ columns. There are **six** source slots; the screen scrolls if they do not all f
 
 - **Sign button, top right:** a green **GO** roundel starts the streams; while they run it is a red
   **STOP** octagon that stops everything.
-- **Menu (three bars):** Configure, Help, About, Check for updates and Quit
+- **Menu (three bars):** Configure, Help, About, Updates and Quit
   (stops everything and closes the app).
-- **Check for updates:** asks GitHub for the newest published release (pre-releases included) and
+- **Updates:** asks GitHub for the newest published release (pre-releases included) and
   compares it with the installed version. If there is a newer one, **Download** opens the APK in your
   browser; install it over the current version and your settings are kept. It contacts GitHub only
   when you choose it, and sends nothing but the request.
@@ -128,7 +128,7 @@ and any `.iml` files in the project folder, and open it again.
 
 - Passwords are stored in the app's private storage on the phone, **not encrypted**, and Android's
   backup may include them.
-- Check for updates contacts `api.github.com` (over https) only when you choose it from the menu.
+- Updates contacts `api.github.com` (over https) only when you choose it from the menu.
 - Plain `http://` and `ws://` are allowed on purpose, since most Icecast and OpenWebRX+ servers use
   them. Anything on the same network could read the streams and the passwords sent to those servers,
   so be careful on shared Wi-Fi.

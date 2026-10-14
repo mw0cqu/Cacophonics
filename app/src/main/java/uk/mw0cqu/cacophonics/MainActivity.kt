@@ -340,7 +340,7 @@ class MainActivity : AppCompatActivity() {
         menu.menu.add(0, 1, 0, "Configure")
         menu.menu.add(0, 2, 1, "Help")
         menu.menu.add(0, 3, 2, "About")
-        menu.menu.add(0, 4, 3, "Check for updates")
+        menu.menu.add(0, 4, 3, "Updates")
         menu.menu.add(0, 5, 4, "Quit")
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
