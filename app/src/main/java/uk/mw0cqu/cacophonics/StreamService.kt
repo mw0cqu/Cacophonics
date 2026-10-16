@@ -67,6 +67,8 @@ class StreamService : MediaBrowserServiceCompat() {
         private const val CHANNEL = "streams"
         private const val ALERT_CHANNEL = "alerts"
         private const val NOTIF_ID = 1
+        private const val LINES_CHANNEL = "lines"
+        private const val LINE_ID_BASE = 10 // lock-screen lines use ids 10..15
         private const val ALERT_ID = 2
         private const val LOST_TEXT = "Bluetooth connection lost"
         private const val ROOT = "root"
@@ -293,6 +295,7 @@ class StreamService : MediaBrowserServiceCompat() {
             hasFocus = false
         }
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        cancelLines()
         main.removeCallbacks(systemPush)
         systemPushScheduled = false
         onChange?.invoke()
@@ -880,13 +883,15 @@ class StreamService : MediaBrowserServiceCompat() {
 
     private fun updateSession() {
         val title = if (running) titleText() else getString(R.string.app_name)
-        val artist = if (running) othersText().ifEmpty { getString(R.string.app_name) } else ""
+        // No app name here: the car display has little room and it is shown anyway by some stereos.
+        val artist = if (running) othersText().ifEmpty { "No other streams" } else ""
+        val album = if (running) Prefs.load(this).getOrNull(focus)?.label(focus).orEmpty() else ""
 
         session.setMetadata(
             MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, getString(R.string.app_name))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                 .build()
         )
 
@@ -950,6 +955,13 @@ class StreamService : MediaBrowserServiceCompat() {
             getSystemService(NotificationManager::class.java).createNotificationChannel(
                 NotificationChannel(ALERT_CHANNEL, "Alerts", NotificationManager.IMPORTANCE_DEFAULT)
             )
+            val lines = NotificationChannel(
+                LINES_CHANNEL, "Stream lines (lock screen)", NotificationManager.IMPORTANCE_LOW
+            )
+            lines.description = "One line per running stream, shown on the lock screen"
+            lines.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            lines.setShowBadge(false)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(lines)
         }
     }
 
@@ -978,10 +990,51 @@ class StreamService : MediaBrowserServiceCompat() {
             .build()
     }
 
+    /**
+     * One display-only line per running stream, so the lock screen shows what each is on.
+     * No buttons: a tap only asks for PIN / fingerprint and opens the app, so nothing can be
+     * muted by accident in a pocket. A stream that is off gets no line; a muted one says so.
+     */
+    private fun updateLines() {
+        val nm = NotificationManagerCompat.from(this)
+        val cfgs = Prefs.load(this)
+        val open = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        for (i in 0 until Prefs.SLOTS) {
+            val s = states[i]
+            if (!running || !s.active || !cfgs[i].enabled) {
+                nm.cancel(LINE_ID_BASE + i)
+                continue
+            }
+            val label = cfgs[i].label(i)
+            val n = NotificationCompat.Builder(this, LINES_CHANNEL)
+                .setSmallIcon(R.drawable.ic_stat)
+                .setContentTitle("${i + 1}: ${s.tag.ifBlank { s.status }}")
+                .setContentText(if (s.silent) "$label (muted)" else label)
+                .setContentIntent(open)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .setShowWhen(false)
+                .setGroup("line$i") // its own group, so Android does not fold the six into one
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
+            nm.notify(LINE_ID_BASE + i, n)
+        }
+    }
+
+    private fun cancelLines() {
+        val nm = NotificationManagerCompat.from(this)
+        for (i in 0 until Prefs.SLOTS) nm.cancel(LINE_ID_BASE + i)
+    }
+
     private fun updateNotification() {
         if (!running) return
         try {
             NotificationManagerCompat.from(this).notify(NOTIF_ID, buildNotification())
+            updateLines()
         } catch (_: SecurityException) {
             // Notification permission not granted; streaming is unaffected.
         }
