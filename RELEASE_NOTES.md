@@ -1,4 +1,4 @@
-# Cacophonics 1.0.9
+# Cacophonics 1.0.10
 
 Many radios, one phone. Listen to up to six Icecast2 streams and OpenWebRX+ receivers at once, with
 each source's tag on screen, on Bluetooth and on the car stereo.
@@ -18,7 +18,7 @@ Known gaps
 Install: download `app-release.apk`, allow "Install unknown apps" when asked, and open it. Android
 or Play Protect may warn that the app is from an unknown developer; choose "Install anyway".
 
-What is new in 1.0.9: the lock screen now has one notification instead of one per stream. It shows the stream
+What is new in 1.0.10: the lock screen now has one notification instead of one per stream. It shows the stream
 you are on and the others; tap the arrow to see all six without unlocking. Tapping it asks for your PIN or
 fingerprint and opens the app. It has no buttons, so nothing can be muted or stopped by accident in a pocket.
 It is no longer a media notification, which may stop Android showing a second media card (some phones

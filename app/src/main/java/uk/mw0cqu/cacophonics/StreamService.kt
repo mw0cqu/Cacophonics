@@ -64,7 +64,7 @@ class StreamService : MediaBrowserServiceCompat() {
     companion object {
         const val ACTION_STOP = "uk.mw0cqu.cacophonics.STOP"
         const val ACTION_DISMISS = "uk.mw0cqu.cacophonics.DISMISS"
-        private const val CHANNEL = "streams"
+        private const val CHANNEL = "streams_lock" // 1.0.10: new id, so it can be shown on the lock screen
         private const val ALERT_CHANNEL = "alerts"
         private const val NOTIF_ID = 1
         private const val ALERT_ID = 2
@@ -948,6 +948,9 @@ class StreamService : MediaBrowserServiceCompat() {
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(CHANNEL, "Streams", NotificationManager.IMPORTANCE_LOW)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            channel.setShowBadge(false)
+            getSystemService(NotificationManager::class.java).deleteNotificationChannel("streams")
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
             getSystemService(NotificationManager::class.java).createNotificationChannel(
                 NotificationChannel(ALERT_CHANNEL, "Alerts", NotificationManager.IMPORTANCE_DEFAULT)
@@ -989,7 +992,6 @@ class StreamService : MediaBrowserServiceCompat() {
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setStyle(box)
             .build()
     }
