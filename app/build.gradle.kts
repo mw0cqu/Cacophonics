@@ -12,8 +12,8 @@ android {
         // Android 5.0 and up: covers the Android 10 head unit and the Android 17 phone.
         minSdk = 21
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.0.8"
+        versionCode = 10
+        versionName = "1.0.9"
     }
 
     buildTypes {

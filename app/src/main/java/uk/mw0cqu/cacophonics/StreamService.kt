@@ -67,8 +67,6 @@ class StreamService : MediaBrowserServiceCompat() {
         private const val CHANNEL = "streams"
         private const val ALERT_CHANNEL = "alerts"
         private const val NOTIF_ID = 1
-        private const val LINES_CHANNEL = "lines"
-        private const val LINE_ID_BASE = 10 // lock-screen lines use ids 10..15
         private const val ALERT_ID = 2
         private const val LOST_TEXT = "Bluetooth connection lost"
         private const val ROOT = "root"
@@ -295,7 +293,6 @@ class StreamService : MediaBrowserServiceCompat() {
             hasFocus = false
         }
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-        cancelLines()
         main.removeCallbacks(systemPush)
         systemPushScheduled = false
         onChange?.invoke()
@@ -955,86 +952,52 @@ class StreamService : MediaBrowserServiceCompat() {
             getSystemService(NotificationManager::class.java).createNotificationChannel(
                 NotificationChannel(ALERT_CHANNEL, "Alerts", NotificationManager.IMPORTANCE_DEFAULT)
             )
-            val lines = NotificationChannel(
-                LINES_CHANNEL, "Stream lines (lock screen)", NotificationManager.IMPORTANCE_LOW
-            )
-            lines.description = "One line per running stream, shown on the lock screen"
-            lines.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            lines.setShowBadge(false)
-            getSystemService(NotificationManager::class.java).createNotificationChannel(lines)
+            // 1.0.8 had a separate channel for six lock-screen lines; one notification replaces them.
+            getSystemService(NotificationManager::class.java).deleteNotificationChannel("lines")
         }
     }
 
+    /**
+     * The one notification. Collapsed it shows the stream you are on and the others; expanded
+     * (the arrow on the lock screen) it lists all of them. It has no buttons, so nothing can be
+     * muted or stopped by accident in a pocket; a tap asks for PIN / fingerprint and opens the app.
+     * It is deliberately not a media-style notification, which stops Android drawing a second
+     * media card for it. Bluetooth and the car still get their text from the media session.
+     */
     private fun buildNotification(): Notification {
         val open = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val stop = PendingIntent.getService(
-            this, 1, Intent(this, StreamService::class.java).setAction(ACTION_STOP),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val playing = states.count { it.active && !it.silent }
+        val title = if (running) titleText() else getString(R.string.app_name)
+        val text = if (running) othersText().ifEmpty { "No other streams" } else "Starting…"
+        val box = NotificationCompat.InboxStyle().setBigContentTitle(title)
+        if (running) {
+            val cfgs = Prefs.load(this)
+            for (i in 0 until Prefs.SLOTS) {
+                if (!cfgs[i].enabled) continue
+                val st = states[i]
+                box.addLine("${i + 1}: ${st.tag.ifBlank { st.status }}${if (st.silent) " (muted)" else ""}")
+            }
+        }
         return NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat)
-            .setContentTitle(if (running) titleText() else getString(R.string.app_name))
-            .setContentText(if (running) "$playing stream(s) audible" else "Starting…")
+            .setContentTitle(title)
+            .setContentText(text)
             .setContentIntent(open)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .addAction(0, "Stop", stop)
-            .setStyle(
-                androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(session.sessionToken)
-            )
+            .setShowWhen(false)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setStyle(box)
             .build()
-    }
-
-    /**
-     * One display-only line per running stream, so the lock screen shows what each is on.
-     * No buttons: a tap only asks for PIN / fingerprint and opens the app, so nothing can be
-     * muted by accident in a pocket. A stream that is off gets no line; a muted one says so.
-     */
-    private fun updateLines() {
-        val nm = NotificationManagerCompat.from(this)
-        val cfgs = Prefs.load(this)
-        val open = PendingIntent.getActivity(
-            this, 0, Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        for (i in 0 until Prefs.SLOTS) {
-            val s = states[i]
-            if (!running || !s.active || !cfgs[i].enabled) {
-                nm.cancel(LINE_ID_BASE + i)
-                continue
-            }
-            val label = cfgs[i].label(i)
-            val n = NotificationCompat.Builder(this, LINES_CHANNEL)
-                .setSmallIcon(R.drawable.ic_stat)
-                .setContentTitle("${i + 1}: ${s.tag.ifBlank { s.status }}")
-                .setContentText(if (s.silent) "$label (muted)" else label)
-                .setContentIntent(open)
-                .setOngoing(true)
-                .setOnlyAlertOnce(true)
-                .setShowWhen(false)
-                .setGroup("line$i") // its own group, so Android does not fold the six into one
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-            nm.notify(LINE_ID_BASE + i, n)
-        }
-    }
-
-    private fun cancelLines() {
-        val nm = NotificationManagerCompat.from(this)
-        for (i in 0 until Prefs.SLOTS) nm.cancel(LINE_ID_BASE + i)
     }
 
     private fun updateNotification() {
         if (!running) return
         try {
             NotificationManagerCompat.from(this).notify(NOTIF_ID, buildNotification())
-            updateLines()
         } catch (_: SecurityException) {
             // Notification permission not granted; streaming is unaffected.
         }

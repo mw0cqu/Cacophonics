@@ -38,10 +38,11 @@ columns. There are **six** source slots; the screen scrolls if they do not all f
 - **Bluetooth / car:** the display shows `N: tag` for the stream that changed most recently and is
   not muted; the "artist" line lists the other audible streams. Next / Previous on the stereo cycles
   the stream shown; Play / Pause mutes or unmutes it.
-- **Lock screen:** one display-only line per running stream (`N: tag`). Tapping a line asks for your
-  PIN or fingerprint and opens the app. There are no buttons on the lines, so nothing can be muted by
-  accident. A muted stream says "(muted)". If the phone hides notification content on the lock screen,
-  the lines show blanked; that is a phone setting.
+- **Lock screen:** one notification, no buttons. Collapsed it shows the stream you are on (`N: tag`) and the
+  others; tap its arrow to list all six. Tapping it asks for your PIN or fingerprint and opens the app, so a
+  touch in a pocket changes nothing. If the phone hides notification content on the lock screen, it shows
+  blanked; that is a phone setting. The notification is not a media notification; Bluetooth and the car
+  take their text from the media session instead.
 - **When Bluetooth or wired audio disconnects,** every stream stops (so nothing plays from the
   phone speaker) and a "Bluetooth connection lost" notice appears. Press GO when it is back.
 - **Android Auto:** declared as a media app. Streams appear as a list; tapping one toggles its mute.
