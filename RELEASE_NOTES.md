@@ -1,4 +1,4 @@
-# Cacophonics 1.0.10
+# Cacophonics 1.0.12
 
 Many radios, one phone. Listen to up to six Icecast2 streams and OpenWebRX+ receivers at once, with
 each source's tag on screen, on Bluetooth and on the car stereo.
@@ -18,14 +18,15 @@ Known gaps
 Install: download `app-release.apk`, allow "Install unknown apps" when asked, and open it. Android
 or Play Protect may warn that the app is from an unknown developer; choose "Install anyway".
 
-What is new in 1.0.10: the lock screen now has one notification instead of one per stream. It shows the stream
-you are on and the others; tap the arrow to see all six without unlocking. Tapping it asks for your PIN or
-fingerprint and opens the app. It has no buttons, so nothing can be muted or stopped by accident in a pocket.
-It is no longer a media notification, which may stop Android showing a second media card (some phones
-still do; the phone's own setting for media on the lock screen then controls it).
-
-What was new in 1.0.8: Bluetooth and car displays no longer get the app name: line 1 is the stream you are
-on, line 2 is the others, and line 3 is that stream's name.
+What is new in 1.0.12: the lock screen now shows one notification: the stream you are on as the heading, and
+the other streams on one compact line (tags shortened, for example `2:Cardi…  3:Scann…  4:MW0ABC`). Open it
+out (the arrow) and you get all six streams on the lock screen's notification page, with the stream you are on
+in bold. A tap asks for your PIN or fingerprint and opens the app. It has no buttons, so nothing can be muted
+or stopped by accident in a pocket. It replaces the media card (Previous / Next / Pause) on the lock screen;
+those buttons still work from a car stereo and inside the app. Bluetooth and car displays no longer get the app
+name: line 1 is the stream you are on, line 2 is the others, line 3 is that stream's name.
+If the lock screen shows nothing, your phone is hiding quiet notifications there: in Settings > Notifications >
+Notifications on lock screen, choose the option that includes silent notifications.
 
 What was new in 1.0.7: the menu entry "Check for updates" is now simply "Updates".
 

@@ -4,6 +4,9 @@
 package uk.mw0cqu.cacophonics
 
 import android.app.Notification
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -67,6 +70,8 @@ class StreamService : MediaBrowserServiceCompat() {
         private const val CHANNEL = "streams_lock" // 1.0.10: new id, so it can be shown on the lock screen
         private const val ALERT_CHANNEL = "alerts"
         private const val NOTIF_ID = 1
+        private const val INFO_ID = 2 // the stream list shown on the lock screen
+        private const val FG_CHANNEL = "streams_fg"
         private const val ALERT_ID = 2
         private const val LOST_TEXT = "Bluetooth connection lost"
         private const val ROOT = "root"
@@ -293,6 +298,7 @@ class StreamService : MediaBrowserServiceCompat() {
             hasFocus = false
         }
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        NotificationManagerCompat.from(this).cancel(INFO_ID)
         main.removeCallbacks(systemPush)
         systemPushScheduled = false
         onChange?.invoke()
@@ -878,6 +884,19 @@ class StreamService : MediaBrowserServiceCompat() {
             .filter { it != focus && states[it].active && !states[it].silent }
             .joinToString(" | ") { "${it + 1}: ${states[it].tag.ifBlank { "-" }}" }
 
+    /**
+     * The lock-screen line: every other running stream, tags cut short so more of them fit
+     * before Android trims the line, e.g. "2:Cardi…  3:Scann…  4:MW0ABC".
+     */
+    private fun compactOthers(): String =
+        states.indices
+            .filter { it != focus && states[it].active }
+            .joinToString("  ") { i ->
+                val st = states[i]
+                val t = if (st.silent) "mute" else st.tag.ifBlank { "-" }.trim()
+                "${i + 1}:" + if (t.length > 6) t.take(5) + "…" else t
+            }
+
     private fun updateSession() {
         val title = if (running) titleText() else getString(R.string.app_name)
         // No app name here: the car display has little room and it is shown anyway by some stereos.
@@ -951,6 +970,11 @@ class StreamService : MediaBrowserServiceCompat() {
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             channel.setShowBadge(false)
             getSystemService(NotificationManager::class.java).deleteNotificationChannel("streams")
+            // The notification Android insists on while we play: tiny, and kept off the lock screen.
+            val fg = NotificationChannel(FG_CHANNEL, "Running", NotificationManager.IMPORTANCE_MIN)
+            fg.lockscreenVisibility = Notification.VISIBILITY_SECRET
+            fg.setShowBadge(false)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(fg)
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
             getSystemService(NotificationManager::class.java).createNotificationChannel(
                 NotificationChannel(ALERT_CHANNEL, "Alerts", NotificationManager.IMPORTANCE_DEFAULT)
@@ -967,20 +991,28 @@ class StreamService : MediaBrowserServiceCompat() {
      * It is deliberately not a media-style notification, which stops Android drawing a second
      * media card for it. Bluetooth and the car still get their text from the media session.
      */
-    private fun buildNotification(): Notification {
+    private fun buildInfoNotification(): Notification {
         val open = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val title = if (running) titleText() else getString(R.string.app_name)
-        val text = if (running) othersText().ifEmpty { "No other streams" } else "Starting…"
-        val box = NotificationCompat.InboxStyle().setBigContentTitle(title)
+        val text = if (running) compactOthers().ifEmpty { "No other streams" } else "Starting…"
+        // Expanded view: a neutral heading (so the stream you are on is not said twice) and all six
+        // lines, with the stream you are on in bold.
+        val audible = states.count { it.active && !it.silent }
+        val box = NotificationCompat.InboxStyle()
+            .setBigContentTitle(if (running) "Streams – $audible audible" else getString(R.string.app_name))
         if (running) {
             val cfgs = Prefs.load(this)
             for (i in 0 until Prefs.SLOTS) {
                 if (!cfgs[i].enabled) continue
                 val st = states[i]
-                box.addLine("${i + 1}: ${st.tag.ifBlank { st.status }}${if (st.silent) " (muted)" else ""}")
+                val line = SpannableString(
+                    "${i + 1}: ${st.tag.ifBlank { st.status }}${if (st.silent) " (muted)" else ""}"
+                )
+                if (i == focus) line.setSpan(StyleSpan(Typeface.BOLD), 0, line.length, 0)
+                box.addLine(line)
             }
         }
         return NotificationCompat.Builder(this, CHANNEL)
@@ -996,10 +1028,31 @@ class StreamService : MediaBrowserServiceCompat() {
             .build()
     }
 
+    /** The placeholder Android requires for a playing service; it is the info notification that matters. */
+    private fun buildNotification(): Notification {
+        val open = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val playing = states.count { it.active && !it.silent }
+        return NotificationCompat.Builder(this, FG_CHANNEL)
+            .setSmallIcon(R.drawable.ic_stat)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(if (running) "$playing stream(s) audible" else "Starting…")
+            .setContentIntent(open)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setShowWhen(false)
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .build()
+    }
+
     private fun updateNotification() {
         if (!running) return
         try {
             NotificationManagerCompat.from(this).notify(NOTIF_ID, buildNotification())
+            NotificationManagerCompat.from(this).notify(INFO_ID, buildInfoNotification())
         } catch (_: SecurityException) {
             // Notification permission not granted; streaming is unaffected.
         }
